@@ -1,7 +1,7 @@
 import curses
-from curses import wrapper
 import queue
 import time
+from curses import wrapper
 
 maze = [
     ["#", "#", "#", "#", "O", "#", "#", "#", "#"],
@@ -17,7 +17,16 @@ maze = [
 ]
 
 
-def print_maze(maze, stdscr, path=[]):
+def print_maze(maze, stdscr, path=None):
+    """
+    Print the maze on the screen with the path highlighted.
+
+    :param maze: The maze structure
+    :param stdscr: The curses screen object
+    :param path: The path to highlight
+    """
+    if path is None:
+        path = []
     BLUE = curses.color_pair(1)
     RED = curses.color_pair(2)
 
@@ -30,18 +39,34 @@ def print_maze(maze, stdscr, path=[]):
 
 
 def find_start(maze, start):
+    """
+    Find the starting position in the maze.
+
+    :param maze: The maze structure
+    :param start: The start character
+    :return: The coordinates of the start position
+    """
     for i, row in enumerate(maze):
         for j, value in enumerate(row):
             if value == start:
                 return i, j
-
     return None
 
 
 def find_path(maze, stdscr):
+    """
+    Find the path from start to end in the maze.
+
+    :param maze: The maze structure
+    :param stdscr: The curses screen object
+    :return: The path from start to end
+    """
     start = "O"
     end = "X"
     start_pos = find_start(maze, start)
+
+    if start_pos is None:
+        raise ValueError("Start position not found in the maze")
 
     q = queue.Queue()
     q.put((start_pos, [start_pos]))
@@ -54,8 +79,8 @@ def find_path(maze, stdscr):
 
         stdscr.clear()
         print_maze(maze, stdscr, path)
-        time.sleep(0.2)
         stdscr.refresh()
+        time.sleep(0.2)
 
         if maze[row][col] == end:
             return path
@@ -75,6 +100,14 @@ def find_path(maze, stdscr):
 
 
 def find_neighbors(maze, row, col):
+    """
+    Find the neighboring cells in the maze.
+
+    :param maze: The maze structure
+    :param row: The current row
+    :param col: The current column
+    :return: A list of neighboring cells
+    """
     neighbors = []
 
     if row > 0:  # UP
@@ -90,6 +123,11 @@ def find_neighbors(maze, row, col):
 
 
 def main(stdscr):
+    """
+    The main function to initialize curses and find the path.
+
+    :param stdscr: The curses screen object
+    """
     curses.init_pair(1, curses.COLOR_BLUE, curses.COLOR_BLACK)
     curses.init_pair(2, curses.COLOR_RED, curses.COLOR_BLACK)
 
