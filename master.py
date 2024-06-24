@@ -29,11 +29,17 @@ def print_maze(maze, stdscr, path=None):
         path = []
     BLUE = curses.color_pair(1)
     RED = curses.color_pair(2)
+    GREEN = curses.color_pair(3)
+    YELLOW = curses.color_pair(4)
 
     for i, row in enumerate(maze):
         for j, value in enumerate(row):
             if (i, j) in path:
-                stdscr.addstr(i, j * 2, "X", RED)
+                stdscr.addstr(i, j * 2, "*", RED)
+            elif value == "O":
+                stdscr.addstr(i, j * 2, "O", GREEN)
+            elif value == "X":
+                stdscr.addstr(i, j * 2, "X", YELLOW)
             else:
                 stdscr.addstr(i, j * 2, value, BLUE)
 
@@ -53,12 +59,13 @@ def find_start(maze, start):
     return None
 
 
-def find_path(maze, stdscr):
+def find_path(maze, stdscr, delay=0.2):
     """
     Find the path from start to end in the maze.
 
     :param maze: The maze structure
     :param stdscr: The curses screen object
+    :param delay: The delay in seconds for visualization
     :return: The path from start to end
     """
     start = "O"
@@ -80,7 +87,7 @@ def find_path(maze, stdscr):
         stdscr.clear()
         print_maze(maze, stdscr, path)
         stdscr.refresh()
-        time.sleep(0.2)
+        time.sleep(delay)
 
         if maze[row][col] == end:
             return path
@@ -130,8 +137,10 @@ def main(stdscr):
     """
     curses.init_pair(1, curses.COLOR_BLUE, curses.COLOR_BLACK)
     curses.init_pair(2, curses.COLOR_RED, curses.COLOR_BLACK)
+    curses.init_pair(3, curses.COLOR_GREEN, curses.COLOR_BLACK)
+    curses.init_pair(4, curses.COLOR_YELLOW, curses.COLOR_BLACK)
 
-    find_path(maze, stdscr)
+    find_path(maze, stdscr, delay=0.1)
     stdscr.getch()
 
 
